@@ -1,0 +1,352 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>学生管理系统</title>
+	<!-- css文件一般放在head标签内 -->
+	<!-- js一般放在</body>之前 -->
+	<!-- 浏览器source看是否有引入 -->
+</head>
+<style>
+	.container{
+		width:80%;
+		height:auto;
+		border:1px solid #a8a8a8;
+		position:absolute;
+		margin:auto;
+		top:0;
+		left:0;
+		right:0;
+		left:0;
+		text-align:center;
+		padding-bottom: 30px;
+		background: #fff;
+		box-shadow: 0 0 4px 0 black;
+		margin-top: 5px;
+	}
+	.container .title{
+		text-align:center;
+		font-size:18px;
+		color:#000;
+		font-family:"微软雅黑";
+		font-weight:400;
+		text-decoration:underline;
+		margin-bottom:10px;
+	}
+	.container .table{
+		width:90%;
+		height:auto;
+		text-align:center;
+		margin:0 auto;
+		border-spacing:none;
+		margin-bottom: 20px;
+	}
+	.table thead{
+		width:80%;
+		height:auto;
+		text-align:center;
+		margin:10px 0;
+		margin-bottom:10px;
+		color:#fff;
+	}
+	th{
+		width:15%;
+		margin-right:10px;
+		font-family:Arial;
+		background:#5d478b;
+		display:block;
+		float:left;
+		cursor: pointer;
+	}
+	th:hover{
+		background: black;
+		color: #fff;
+	}
+	.table tbody{
+		width:80%;
+		height:auto;
+		text-align:center;
+		margin:10px 0;
+		margin-bottom:10px;
+	}
+	tr{
+		width:100%;
+		height:auto;
+		text-align:center;
+		margin:15px 0;
+		margin-bottom:10px;
+		border-bottom:1px solid #4b0082;
+		float:left;
+		cursor: pointer;
+	}
+	td{
+		width:15%;
+		font-size:18px;
+		color:#484848;
+		font-weight:400;
+		font-family:Arial;
+		display:block;
+		float:left;
+		margin-right:10px;
+		text-align:center;
+	}
+	.tg,.dell{
+		width:15px;
+		height:15px;
+		text-align:center;
+	}
+	.new{
+		width:60px;
+		height:auto;
+		margin-right:30px;
+		float: left;
+		display:inline-block;
+		border:none;
+		border-bottom:1px solid #ededed;
+		text-align:center;
+	}
+	.add{
+		width:80%;
+		margin:0 auto;
+		margin-bottom: 15px;
+		border-radius:3px;
+		background:#4eee94;
+		font-weight:800;
+		font-size:20px;
+		color:#fff;
+		cursor:pointer;
+	}
+	.add:hover{
+		font-size: 30px;
+		box-shadow: inset 0 0 4px 0 black;
+	}
+	.remove{
+		width:80%;
+		margin:0 auto;
+		border-radius:3px;
+		background:#cd0000;
+		font-weight:800;
+		font-size:15px;
+		color:#fff;
+		cursor:pointer;
+		margin-top:7px;
+	}
+	.remove:hover{
+		font-size: 20px;
+		box-shadow: inset 0 0 4px 0 black;
+	}
+</style>
+<body>
+	<div class="container">
+		<div class="title"><h1>students Information</h1></div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th flag="true" data-role="id">id</th>
+					<th flag="true" data-role="name">name</th>
+					<th flag="true" data-role="age">age</th>
+					<th flag="true" data-role="sex">sex</th>
+					<th flag="true" data-role="some">home</th>
+					<th><input type="checkbox" class="tg"></th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+		<div class="add">+</div>
+		<div class="remove">☓</div>
+	</div>
+</body>
+<script>
+	var 
+	arr=[],
+	forEach = arr.forEach,
+	filter = arr.filter;
+
+	if(localStorage.student){   //判断是否有需要的值
+		var student=JSON.parse(localStorage.getItem('student'));//字符串转为数组传给全局变量
+	 }else{
+		var student=[                                          //创建模拟数组对象
+			{id:1001,name:'Jack',age:'20',sex:'man',home:'America'},
+			{id:1002,name:'Jack',age:'20',sex:'man',home:'America'},
+			{id:1003,name:'Jack',age:'20',sex:'man',home:'America'},
+			{id:1004,name:'Jack',age:'20',sex:'man',home:'America'},
+			{id:1005,name:'Jack',age:'20',sex:'man',home:'America'},
+			{id:1006,name:'Jack',age:'20',sex:'man',home:'America'}
+		]
+		localStorage.setItem('student',JSON.stringify(student))   //存储
+	 }
+
+//渲染数据
+	var tbody=document.querySelector('.table tbody');
+	var render=function(){
+		tbody.innerHTML="";
+		for(var i in student){
+			var _d=student[i];
+			var el=document.createElement('tr');
+			el.setAttribute('bb',_d.id);
+			el.innerHTML='<td>'+_d.id+'</td><td data-role="name">'+_d.name+'</td><td data-role="age">'+_d.age+'</td><td data-role="sex">'+_d.sex+'</td><td data-role="home">'+_d.home+'</td><td><input  type="checkbox"  class="dell" value="'+_d.id+'"></td>';
+			tbody.appendChild(el)
+		 }
+	}
+
+//点击事件 编辑&选择交互
+	tbody.onclick=function(e){
+		var els=e.target;
+		if(els.nodeName=='TD'){
+			editHandel(els,e);
+		}else if(els.classList.contains('dell')){
+			dellHandel.call(els,e)
+		}
+	 }
+
+//编辑恢复与编辑状态	
+	var editHandel=function(e){
+		if(tbody.querySelector('.editing')){
+			togglebian(tbody.querySelector('.editing'))
+		}
+		    togglebian(e.parentElement)
+	 }
+
+//实现全选与单选的交互
+	var dellHandel=function(e){
+		var els=tbody.querySelectorAll('.dell');
+		for(var i = 0,el,j=0; i < els.length; i++){
+			el=els[i];
+			if(el.checked){
+				j +=1;
+			}
+		}
+		toggleCheck.checked=(j==student.length);
+	 }
+
+//新增一条数据
+	var add = document.querySelector('.add');
+	add.onclick=function(){
+		if(student.length){
+			var xuehao=student[student.length-1].id+1;
+		}else{
+			var xuehao=1001;
+		}
+		var shuju = {id:xuehao,name:'',age:'',sex:'',home:''}
+		student.push(shuju);
+		localStorage.setItem('student',JSON.stringify(student));
+		// console.table(student);
+
+		var addstu=document.createElement('tr');
+		addstu.setAttribute('bb',shuju.id);
+		addstu.innerHTML='<td>'+shuju.id+'</td><td data-role="name">'+shuju.name+'</td><td data-role="age">'+shuju.age+'</td><td data-role="sex">'+shuju.sex+'</td><td data-role="home">'+shuju.home+'</td><td><input  type="checkbox"  class="dell" value="'+shuju.id+'"></td>';
+		tbody.appendChild(addstu);
+		togglebian(addstu)
+	 }
+
+//编辑一条数据
+	var togglebian=function(addstu){
+		var tds=addstu.querySelectorAll('td[data-role]');
+		if(addstu.classList.contains('editing')){
+			for(var i=0; i<tds.length; i++){
+				var el=tds[i];
+				var tmp=el.querySelector('input').value;
+				el.innerHTML=tmp;
+				addstu.classList.remove('editing')
+			}
+		}else{
+			for(var i=0;i<tds.length;i++){
+				var el=tds[i];
+				var tmp=el.innerHTML;
+				el.innerHTML='<input  type="text" class="new" value="'+tmp+'">';
+				addstu.classList.add('editing')
+			}
+		}
+
+	 }
+
+//删除一条数据
+	var deleteshuzu=function(id){
+		id=parseInt(id);
+		var _s=[];
+		for(var k in student){
+			var v=student[k];
+			if(v.id != id){
+				_s.push(student[k])
+			}
+		}
+		student=_s;
+		localStorage.setItem('student',JSON.stringify(student))
+	}
+
+//实现全选或反选
+	var toggleCheck=document.querySelector('.tg');
+	toggleCheck.onclick=function(el){
+		var els=tbody.querySelectorAll('.dell');
+		for(var i=0,el; i<els.length; i++){
+			el=els[i];
+			el.checked=this.checked;
+		}
+	 }
+
+//批量删除
+	var remove=document.querySelector('.remove');
+	remove.onclick=function(){
+		var els=tbody.querySelectorAll('.dell');
+		for(var i = 0;i<els.length; i++){
+			el=els[i];
+			if(el.checked){
+				tbody.removeChild(el.parentElement.parentElement);
+				deleteshuzu(el.value)
+			}
+		}
+		toggleCheck.checked=false;
+	 }
+
+//修改一条数据&保存修改数据
+	var update=function(xuehao,k,v){
+		xuehao=parseInt(xuehao);
+		for(var i=0; i<student.length; i++){
+			if(student[i].id==xuehao){
+				student[i][k]=v;
+			}
+		}
+		localStorage.setItem('student',JSON.stringify(student))
+	 }
+	var timeId;
+	tbody.onkeyup=function(e){
+		var el=e.target;
+		var xuehao=el.parentElement.parentElement.getAttribute('bb');
+		var key=el.parentElement.getAttribute('data-role');
+		var value=el.value;
+
+		clearInterval(timeId);
+		timeId=setTimeout(function(e){
+			update(xuehao,key,value)
+		},500)
+	 }
+
+//排序
+	var thead=document.querySelector('.table thead')
+	thead.onclick=function(e){
+		var el=e.target;
+		if(el.nodeName=='TH'){
+			var sortKey=el.getAttribute('data-role');
+			var state=(el.getAttribute('flag')==='true')?true:false;
+			el.setAttribute('flag',!state)
+			student=student.sort(function(x,y){
+				return state ? (x[sortKey]<y[sortKey]):(x[sortKey]>y[sortKey])
+			})
+			render();
+			console.log(student)
+		}
+	 }
+
+
+	render()
+
+
+
+
+
+
+
+</script>
+</html>
